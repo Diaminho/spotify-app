@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class PlaylistDto {
-    List<SongDto> songs;
+    private List<SongDto> songs;
 }

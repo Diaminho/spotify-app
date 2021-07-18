@@ -1,7 +1,7 @@
 spotify:
   api:
-    url: https://api.spotify.com
+    baseUrl: https://api.spotify.com
   auth:
-    url: https://accounts.spotify.com/api/token
+    baseUrl: https://accounts.spotify.com/api/token
     clientId: ${CLIENT_ID}
     clientSecret: ${CLIENT_SECRET}
