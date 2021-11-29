@@ -1,6 +1,9 @@
 package diaminho.spotify.exception;
 
-public class ApiSpotifyException extends RuntimeException{
+/**
+ * Exception for Spotify API interaction troubles via
+ */
+public class ApiSpotifyException extends RuntimeException {
 
     public ApiSpotifyException(String message) {
         super(message);

@@ -8,6 +8,9 @@ import org.mapstruct.Mapping;
 
 import java.util.stream.Collectors;
 
+/**
+ * Mapper for Spotify Item model to SongDto
+ */
 @Mapper(componentModel = "spring", imports = {Collectors.class, Artist.class})
 public interface SongDtoMapper {
     @Mapping(expression = "java(item.getTrack().getName())", target = "name")

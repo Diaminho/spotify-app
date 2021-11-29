@@ -22,9 +22,16 @@
 
         <org.projectlombok.version>1.18.18</org.projectlombok.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <org.spingdoc.version>1.5.12</org.spingdoc.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${org.spingdoc.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

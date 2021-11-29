@@ -3,6 +3,7 @@ package diaminho.spotify.service;
 import diaminho.spotify.dto.SongDto;
 import diaminho.spotify.exception.ApiSpotifyException;
 import diaminho.spotify.mapper.SongDtoMapper;
+import diaminho.spotify.mapper.YandexPlaylistStringMapper;
 import diaminho.spotify.model.auth.Token;
 import diaminho.spotify.model.spotify.Item;
 import diaminho.spotify.model.spotify.Response;
@@ -27,11 +28,13 @@ public class SpotifyService {
     private final WebClient spotifyClient;
     private final AuthService authService;
     private final SongDtoMapper songDtoMapper;
+    private final YandexPlaylistStringMapper yandexPlaylistStringMapper;
 
-    public SpotifyService(@Qualifier("spotifyHttpClient") WebClient spotifyClient, AuthService authService, SongDtoMapper songDtoMapper) {
+    public SpotifyService(@Qualifier("spotifyHttpClient") WebClient spotifyClient, AuthService authService, SongDtoMapper songDtoMapper, YandexPlaylistStringMapper yandexPlaylistStringMapper) {
         this.spotifyClient = spotifyClient;
         this.authService = authService;
         this.songDtoMapper = songDtoMapper;
+        this.yandexPlaylistStringMapper = yandexPlaylistStringMapper;
     }
 
     public List<SongDto> getPlaylistTracks(String playlistId) {
@@ -49,6 +52,10 @@ public class SpotifyService {
                 .stream()
                 .map(songDtoMapper::itemToSongDto)
                 .collect(Collectors.toList());
+    }
+
+    public String getPlaylistAsString(String playlistId) {
+        return yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(getPlaylistTracks(playlistId));
     }
 
 

@@ -1,5 +1,6 @@
 package diaminho.spotify.service;
 
+import diaminho.spotify.exception.AuthSpotifyException;
 import diaminho.spotify.model.auth.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +34,7 @@ public class AuthService {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> response.bodyToMono(String.class)
-                        .flatMap(error -> Mono.error(new RuntimeException(error))))
+                        .flatMap(error -> Mono.error(new AuthSpotifyException(error))))
                 .bodyToMono(Token.class);
 
         return result.block();

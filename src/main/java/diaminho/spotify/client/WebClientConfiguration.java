@@ -18,19 +18,32 @@ public class WebClientConfiguration {
     private static final String AUTH_PREFIX = "Basic ";
     private static final String BASIC_AUTH_SEPARATOR = ":";
 
+    //16 KB
+    private static final int CODEC_IN_MEMORY_SIZE = 16 * 1024 * 1024;
+
+    /**
+     * Client for spotify API
+     * @param clientProperties Base ur;
+     * @return WebClint for spotify API
+     */
     @Bean("spotifyHttpClient")
     public WebClient spotifyClient(ClientProperties clientProperties) {
         return WebClient.builder()
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(configurer -> configurer
                                 .defaultCodecs()
-                                .maxInMemorySize(16 * 1024 * 1024))
+                                .maxInMemorySize(CODEC_IN_MEMORY_SIZE))
                         .build())
                 .baseUrl(clientProperties.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
+    /**
+     * Auth client for spotify API
+     * @param authProperties client credentials and oauth url
+     * @return WebClient for auth
+     */
     @Bean("spotifyAuthHttpClient")
     public WebClient spotifyAuthClient(AuthProperties authProperties) {
         String basicAuthKey = generateBasicAuthKey(authProperties);

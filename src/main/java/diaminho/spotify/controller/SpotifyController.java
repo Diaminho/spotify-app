@@ -1,8 +1,6 @@
 package diaminho.spotify.controller;
 
 import diaminho.spotify.dto.SongDto;
-import diaminho.spotify.model.auth.Token;
-import diaminho.spotify.service.AuthService;
 import diaminho.spotify.service.SpotifyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +15,9 @@ import java.util.List;
 @Slf4j
 public class SpotifyController {
     private final SpotifyService spotifyService;
-    private final AuthService authService;
 
-    public SpotifyController(SpotifyService spotifyService, AuthService authService) {
+    public SpotifyController(SpotifyService spotifyService) {
         this.spotifyService = spotifyService;
-        this.authService = authService;
     }
 
     @GetMapping("export/{playlistId}")
@@ -29,9 +25,8 @@ public class SpotifyController {
         return spotifyService.getPlaylistTracks(playlistId);
     }
 
-
-    @GetMapping("token")
-    public Token getAccessToken() {
-        return authService.getAccessToken();
+    @GetMapping("export-as-string/{playlistId}")
+    public String exportAsPlaylist(@PathVariable("playlistId") String playlistId) {
+        return spotifyService.getPlaylistAsString(playlistId);
     }
 }
