@@ -10,18 +10,14 @@ import java.util.List;
  */
 @Component
 public class YandexPlaylistStringMapper {
-    private static final String AUTHOR_NAME_SEPARATOR = " - ";
-    private static final String SONG_SEPARATOR = "\n";
+    private static final String YANDEX_SONG_FORMAT = "%s - %s\n";
 
     public String songsDtoToYandexPlaylistString(List<SongDto> songs) {
         StringBuilder yandexString = new StringBuilder();
 
         songs.forEach(song ->
                 yandexString
-                        .append(song.getAuthor())
-                        .append(AUTHOR_NAME_SEPARATOR)
-                        .append(song.getName())
-                        .append(SONG_SEPARATOR)
+                        .append(String.format(YANDEX_SONG_FORMAT, song.getAuthor(), song.getName()))
         );
 
         return yandexString.toString();
