@@ -1,0 +1,7 @@
+spotify:
+  api:
+    baseUrl: https://test
+  auth:
+    baseUrl: https://auth.test
+    clientId: testId
+    clientSecret: testSecret

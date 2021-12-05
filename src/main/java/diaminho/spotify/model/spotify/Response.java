@@ -11,7 +11,7 @@ public class Response {
     private List<Item> items;
     private long limit;
     private String next;
-    private long offset;
+    private int offset;
     private String previous;
-    private long total;
+    private int total;
 }

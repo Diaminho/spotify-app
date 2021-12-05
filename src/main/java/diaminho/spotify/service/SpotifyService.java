@@ -7,17 +7,22 @@ import diaminho.spotify.mapper.YandexPlaylistStringMapper;
 import diaminho.spotify.model.auth.Token;
 import diaminho.spotify.model.spotify.Item;
 import diaminho.spotify.model.spotify.Response;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +33,7 @@ import java.util.stream.Collectors;
 public class SpotifyService {
     private static final String PLAYLIST_URI = "/v1/playlists/%s/tracks";
     private static final String TOKEN_PREFIX = "Bearer ";
+    private static final int LIMIT = 100;
 
     private final WebClient spotifyClient;
     private final AuthService authService;
@@ -49,37 +55,42 @@ public class SpotifyService {
      * @param playlistId spotify playlist id
      * @return List of songs from playlist
      */
-    public List<SongDto> getPlaylistTracks(String playlistId) {
+    public Flux<SongDto> getPlaylistTracks(String playlistId) {
         Token token = authService.getAccessToken();
-
         String accessToken = TOKEN_PREFIX + token.getAccessToken();
 
         String playlistUri = String.format(PLAYLIST_URI, playlistId);
+        Flux<Item> items = getTracks(playlistUri, accessToken);
 
-        List<Item> items = new ArrayList<>();
-        Response response = getTracks(items, playlistUri, accessToken);
-
-        return response
-                .getItems()
-                .stream()
-                .map(songDtoMapper::itemToSongDto)
-                .collect(Collectors.toList());
+        return items.map(songDtoMapper::itemToSongDto);
     }
+
 
     /**
      * Receive all songs from Spotify playlist as String formatted to Yandex playlist importer
      * @param playlistId Spotify playlist Id
      * @return Formatted string for Yandex playlist importer
      */
-    public String getPlaylistAsString(String playlistId) {
-        var playlist = getPlaylistTracks(playlistId);
-        return yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(playlist);
+
+    public Mono<String> getPlaylistAsString(String playlistId) {
+        return getPlaylistTracks(playlistId).
+        return Mono
+                .from(yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(playlist));
     }
 
+    private Flux<Item> getTracks(String playlistUri, String token) {
+        return getTrack(playlistUri, token)
+                .flatMapMany(response ->
+                        Flux.fromIterable(generatePlaylistUris(response.getTotal(), playlistUri))
+                                .flatMap(pageUri -> getTrack(pageUri, token))
+                                .map(Response::getItems)
+                                .flatMap(Flux::fromIterable)
+                                .mergeWith(Flux.fromIterable(response.getItems()))
+                );
+    }
 
-    private Response getTracks(List<Item> previousItems, String playlistUri, String token) {
-        //TODO try parallel stream instead of recursion
-        Mono<Response> responseMono = spotifyClient
+    private Mono<Response> getTrack(String playlistUri, String token) {
+        return spotifyClient
                 .get()
                 .uri(playlistUri)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -87,28 +98,21 @@ public class SpotifyService {
                 .onStatus(HttpStatus::isError, response -> response.createException()
                         .flatMap(error -> Mono.error(new ApiSpotifyException("Cannot receive playlist info: " + response.releaseBody()))))
                 .bodyToMono(Response.class);
+    }
 
-        Response response = responseMono.block();
+    private List<String> generatePlaylistUris(int total, String playlistId) {
+        long count = (long) Math.ceil((double) total / (LIMIT)) - 1;
 
-        if (response == null) {
-            throw new ApiSpotifyException("Received null response from Spotify");
+        if (count < 1) {
+            return Collections.emptyList();
         }
 
-        var items = response.getItems();
+        List<String> playlistUris = new ArrayList<>();
 
-        if (items == null) {
-            throw new ApiSpotifyException("Received null playlist info in Spotify response");
+        for (int i = 0; i < count; i++) {
+            playlistUris.add(playlistId + "?limit=" + LIMIT + "&offset=" + (i + 1) * LIMIT);
         }
 
-        previousItems.addAll(items);
-
-        String next = response.getNext();
-
-        if (next != null) {
-            getTracks(previousItems, next, token);
-        }
-
-        response.getItems().addAll(previousItems);
-        return response;
+        return playlistUris;
     }
 }
