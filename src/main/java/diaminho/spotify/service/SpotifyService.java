@@ -73,9 +73,8 @@ public class SpotifyService {
      */
 
     public Mono<String> getPlaylistAsString(String playlistId) {
-        return getPlaylistTracks(playlistId).
         return Mono
-                .from(yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(playlist));
+                .from(yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(getPlaylistTracks(playlistId)));
     }
 
     private Flux<Item> getTracks(String playlistUri, String token) {

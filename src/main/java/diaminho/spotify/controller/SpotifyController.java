@@ -25,9 +25,9 @@ public class SpotifyController {
         return spotifyService.getPlaylistTracks(playlistId);
     }
 
-    /*
+
     @GetMapping("export-as-string/{playlistId}")
     public Mono<String> exportAsPlaylist(@PathVariable("playlistId") String playlistId) {
         return spotifyService.getPlaylistAsString(playlistId);
-    }*/
+    }
 }
