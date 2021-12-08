@@ -23,12 +23,12 @@ public class AuthService {
         this.spotifyClient = spotifyClient;
     }
 
-    public Token getAccessToken() {
+    public Mono<Token> getAccessToken() {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
         body.add("scope", "playlist-read-collaborative");
 
-        Mono<Token> result = spotifyClient
+        return spotifyClient
                 .post()
                 .body(BodyInserters.fromFormData(body))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -36,7 +36,5 @@ public class AuthService {
                 .onStatus(HttpStatus::isError, response -> response.bodyToMono(String.class)
                         .flatMap(error -> Mono.error(new AuthSpotifyException(error))))
                 .bodyToMono(Token.class);
-
-        return result.block();
     }
 }

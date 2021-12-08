@@ -1,4 +1,4 @@
-package spotify.mapper;
+package diaminho.spotify.mapper;
 
 import diaminho.spotify.dto.SongDto;
 import diaminho.spotify.mapper.YandexPlaylistStringMapper;

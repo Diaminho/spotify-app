@@ -1,4 +1,4 @@
-package spotify.service;
+package diaminho.spotify.service;
 
 
 
