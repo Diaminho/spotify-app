@@ -49,7 +49,7 @@ public class SpotifyService {
      * @return List of songs from playlist
      */
     public Flux<SongDto> getPlaylistTracks(String playlistId) {
-        Mono<Token> token = authService.getAccessToken();
+        Mono<Token> token = authService.getToken();
         Flux<Item> items = getTracks(playlistId, token);
 
         return items.map(songDtoMapper::itemToSongDto);
@@ -62,8 +62,7 @@ public class SpotifyService {
      * @return Formatted string for Yandex playlist importer
      */
     public Mono<String> getPlaylistAsString(String playlistId) {
-        return Mono
-                .from(yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(getPlaylistTracks(playlistId)));
+        return yandexPlaylistStringMapper.songsDtoToYandexPlaylistString(getPlaylistTracks(playlistId));
     }
 
     private Flux<Item> getTracks(String playlistId, Mono<Token> token) {
@@ -94,6 +93,7 @@ public class SpotifyService {
     }
 
     private List<String> generatePlaylistUris(int total, String playlistId) {
+        // one less cause we receive first page separately
         long count = (long) Math.ceil((double) total / (LIMIT)) - 1;
 
         if (count < 1) {

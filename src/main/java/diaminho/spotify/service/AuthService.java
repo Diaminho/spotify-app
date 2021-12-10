@@ -23,7 +23,7 @@ public class AuthService {
         this.spotifyClient = spotifyClient;
     }
 
-    public Mono<Token> getAccessToken() {
+    public Mono<Token> getToken() {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
         body.add("scope", "playlist-read-collaborative");

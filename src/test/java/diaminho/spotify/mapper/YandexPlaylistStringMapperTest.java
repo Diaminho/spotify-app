@@ -1,13 +1,13 @@
 package diaminho.spotify.mapper;
 
 import diaminho.spotify.dto.SongDto;
-import diaminho.spotify.mapper.YandexPlaylistStringMapper;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class YandexPlaylistStringMapperTest {
     private final YandexPlaylistStringMapper mapper = new YandexPlaylistStringMapper();
@@ -21,8 +21,11 @@ public class YandexPlaylistStringMapperTest {
 
         List<SongDto> songs = List.of(new SongDto(defaultAuthor, defaultName));
 
-        /*String actual = mapper.songsDtoToYandexPlaylistString(songs);
+        Mono<String> playlistMono = mapper.songsDtoToYandexPlaylistString(Flux.fromIterable(songs));
 
-        assertEquals(actual, expected);*/
+        StepVerifier
+                .create(playlistMono)
+                .expectNextMatches(p -> p.equals(expected))
+                .verifyComplete();
     }
 }
