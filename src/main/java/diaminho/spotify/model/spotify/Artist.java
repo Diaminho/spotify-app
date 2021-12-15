@@ -12,9 +12,8 @@ public class Artist {
     @Schema(description = "Artist's name")
     private String name;
 
-    //TODO
     private String type;
 
-    @Schema(description = "Spotify uri to artis")
+    @Schema(description = "Spotify uri to artist")
     private String uri;
 }

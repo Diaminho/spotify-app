@@ -26,7 +26,7 @@ public class SpotifyController {
     }
 
 
-    @GetMapping("export-as-string/{playlistId}")
+    @GetMapping("export-as-yandex-string/{playlistId}")
     public Mono<String> exportAsPlaylist(@PathVariable("playlistId") String playlistId) {
         return spotifyService.getPlaylistAsString(playlistId);
     }

@@ -57,7 +57,7 @@ public class SpotifyControllerTest {
         when(spotifyService.getPlaylistAsString(eq(playlistId))).thenReturn(playlist);
 
         webTestClient.get()
-                .uri("/spotify/export-as-string/" + playlistId)
+                .uri("/spotify/export-as-yandex-string/" + playlistId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()

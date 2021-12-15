@@ -1,6 +1,5 @@
 package diaminho.spotify.service;
 
-
 import diaminho.spotify.dto.SongDto;
 import diaminho.spotify.mapper.SongDtoMapper;
 import diaminho.spotify.mapper.YandexPlaylistStringMapper;
